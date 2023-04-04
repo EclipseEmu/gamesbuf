@@ -65,8 +65,8 @@ struct GamesbufEntry {
 	u8 name_length;
 	u8 art_length;
 	u8 system;
-	u8 region;
 	char md5[0x10];
+	u8 region;
 	char name[name_length];
 	char art[name_length];
 }
