@@ -1,0 +1,29 @@
+{
+    "name": "gamesbuf",
+    "version": "0.1.0",
+    "description": "A highly concise data format for basic information about games.",
+    "author": "Magnetar",
+    "license": "MIT",
+    "keywords": [],
+    "repository": {
+        "url": "https://github.com/eclipseemu/gamesbuf.git"
+    },
+    "types": "./dist/gamesbuf.d.ts",
+    "main": "./dist/gamesbuf.umd.js",
+    "module": "./dist/gamesbuf.mjs",
+    "files": [
+        "/dist"
+    ],
+    "scripts": {
+        "build": "vite build",
+        "test": "vitest",
+        "coverage": "vitest run --coverage"
+    },
+    "devDependencies": {
+        "rome": "^12.0.0",
+        "typescript": "^5.0.3",
+        "vite": "^4.2.1",
+        "vite-plugin-dts": "^2.2.0",
+        "vitest": "^0.29.8"
+    }
+}

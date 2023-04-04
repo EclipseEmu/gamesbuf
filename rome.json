@@ -1,0 +1,17 @@
+{
+    "$schema": "./node_modules/rome/configuration_schema.json",
+    "organizeImports": {
+        "enabled": false
+    },
+    "formatter": {
+        "lineWidth": 120,
+        "indentSize": 4,
+        "indentStyle": "tab"
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": true
+        }
+    }
+}
