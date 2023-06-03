@@ -42,14 +42,14 @@ export class GamesbufReader<System extends Uint8, Region extends Uint8> {
 		for (let i = 0, length = queries.length; i < length; i++) {
 			const query = queries[i];
 			if (typeof query.md5 === "string") {
-				let hashBytes = new Uint8Array(HASH_LEN);
+				const hashBytes = new Uint8Array(HASH_LEN);
 				convertHexStringToBuffer(query.md5, hashBytes);
 				(query as ByteHashReaderQuery).md5Buffer = hashBytes;
 			} else if (query.md5 instanceof Uint8Array) {
 				(query as ByteHashReaderQuery).md5Buffer = query.md5;
 				(query as ByteHashReaderQuery).md5 = convertBufferToHexString(query.md5);
 			}
-			if (query.md5.length !== HASH_LEN * 2) {
+			if ((query as ByteHashReaderQuery).md5.length !== HASH_LEN * 2) {
 				throw new Error(`Invalid MD5 hash length. Expected ${HASH_LEN} got ${query.md5.length}.`);
 			}
 		}
@@ -64,9 +64,9 @@ export class GamesbufReader<System extends Uint8, Region extends Uint8> {
 	}
 
 	async process(): Promise<GamesbufEntry<System, Region>[]> {
-		let matches: GamesbufEntry<System, Region>[] = [];
-		let queries = this.queries;
-		let remainingQueries = queries.slice();
+		const matches: GamesbufEntry<System, Region>[] = [];
+		const queries = this.queries;
+		const remainingQueries = queries.slice();
 
 		// if there's nothing to look for, just skip running entirely
 		if (!queries.length) {
@@ -81,25 +81,25 @@ export class GamesbufReader<System extends Uint8, Region extends Uint8> {
 			if (result.done) {
 				break;
 			}
-			let buffer = result.value;
+			const buffer = result.value;
 			if (!buffer) {
 				continue;
 			}
 
 			// copy the startIndex, and set it to 0
-			let start = startIndex;
+			const start = startIndex;
 			startIndex = 0;
 
 			// loop over the bytes and parse entries
 			for (let i = start, length = buffer.length; i < length; i++) {
-				let byte = buffer[i];
+				const byte = buffer[i];
 
 				// Read the header, currently just skip because there is only one version
 				if (this.bytesRead++ === 0) {
 					continue;
 				}
 
-				let pos = this.entryOffset++;
+				const pos = this.entryOffset++;
 
 				// if we're skipping the entry, jump to the next one
 				if (this.entrySkip) {
@@ -122,7 +122,7 @@ export class GamesbufReader<System extends Uint8, Region extends Uint8> {
 					// if there's no system specified in the query, don't skip
 					let skip = true;
 					for (let i = 0, length = remainingQueries.length; i < length; i++) {
-						let query = remainingQueries[i];
+						const query = remainingQueries[i];
 						if (!query.system || query.system === byte) {
 							skip = false;
 							break;
@@ -131,7 +131,7 @@ export class GamesbufReader<System extends Uint8, Region extends Uint8> {
 					this.entrySkip = skip;
 				} else if (pos >= HASH_OFFSET && pos < REGION_OFFSET) {
 					// check if any of the queries match this hash at this index, otherwise skip it
-					let hashIndex = pos - HASH_OFFSET;
+					const hashIndex = pos - HASH_OFFSET;
 					let skip = true;
 					for (let i = 0, length = remainingQueries.length; i < length; i++) {
 						if (remainingQueries[i].md5Buffer[hashIndex] === byte) {
@@ -144,15 +144,15 @@ export class GamesbufReader<System extends Uint8, Region extends Uint8> {
 
 				// check if we've reached the end of the entry
 				if (this.entryOffset && this.entryOffset === this.entryLength) {
-					let entry = this.entryFromBuffer(this.entry.subarray(0, this.entryLength));
+					const entry = this.entryFromBuffer(this.entry.subarray(0, this.entryLength));
 					matches.push(entry);
 
 					// determine which queries were satisfied by this entry and remove them
-					let shouldRemove: number[] = [];
+					const shouldRemove: number[] = [];
 					for (let i = 0, length = remainingQueries.length; i < length; i++) {
-						let query = remainingQueries[i];
-						let system = query.system;
-						let region = query.region;
+						const query = remainingQueries[i];
+						const system = query.system;
+						const region = query.region;
 						if (query.md5 === entry.md5 || (system && system !== entry.system) || (region && region !== entry.region)) {
 							continue;
 						}
