@@ -1,6 +1,6 @@
-import { GamesbufWriter } from "../src/mod";
-import { EXAMPLE_BYTES } from "./_common";
 import { assert, test } from "vitest";
+import { GamesbufWriter } from "../src/mod.ts";
+import { EXAMPLE_BYTES } from "./common.ts";
 
 export class WrappedWritableStream {
 	private chunks: Uint8Array[] = [];
@@ -35,16 +35,19 @@ export class WrappedWritableStream {
 	}
 }
 
-test("that it generates a proper file", async () => {
+test("generates a proper response", async () => {
 	const outputStream = new WrappedWritableStream();
 	const writer = new GamesbufWriter(outputStream.stream);
 	await writer.writeHeader();
-	await writer.writeEntry({
-		name: "test",
-		system: 1,
-		region: 2,
-		md5: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-	});
+	const hashBytes = [0xaa, 0xaa, 0xbb, 0xbb, 0xaa];
+	for (let i = 0, length = hashBytes.length; i < length; ++i) {
+		await writer.writeEntry({
+			name: "test",
+			system: 1,
+			region: 2,
+			md5: new Uint8Array(16).fill(hashBytes[i]),
+		});
+	}
 	await writer.finish();
 	const data = outputStream.getBytes();
 	assert.deepEqual(EXAMPLE_BYTES, data, "data mismatch");

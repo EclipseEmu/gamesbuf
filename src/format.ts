@@ -1,22 +1,19 @@
-/** An unsigned 8-bit integer. Possible values: 0-255 */
+/** An unsigned 8-bit integer. Possible values: 0-255. */
 export type Uint8 = number;
 
+/** An entry representing the basic info of a game. */
 export type GamesbufEntry<System extends Uint8 = Uint8, Region extends Uint8 = Uint8> = {
-	/** The game's name */
 	name: string;
-	/** The MD5 hash of the game */
-	md5: string;
-	/** The game's box art */
+	md5: Uint8Array;
 	art?: string;
-	/** The game's region */
 	region: Region;
-	/** The game's system */
 	system: System;
 };
 
+/** A query for `GamesbufReader`. */
 export type GamesbufReaderQuery<System extends Uint8 = Uint8, Region extends Uint8 = Uint8> = {
 	/** The MD5 hash of the game to look for. Matches exactly. */
-	readonly md5: string | Uint8Array;
+	readonly md5: Uint8Array;
 	/** The region of the game to look for. When present, the reader will prefer this value. */
 	readonly region?: Region;
 	/** The system of the game to look for. Matches exactly. */
