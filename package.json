@@ -6,7 +6,7 @@
   "license": "MIT",
   "keywords": [],
   "repository": {
-    "url": "https://github.com/eclipseemu/gamesbuf.git"
+    "url": "git+https://github.com/eclipseemu/gamesbuf.git"
   },
   "types": "./dist/gamesbuf.d.ts",
   "main": "./dist/gamesbuf.umd.js",
