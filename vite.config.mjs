@@ -1,12 +1,11 @@
-import { resolve } from "path";
 import dts from "vite-plugin-dts";
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vite";
+import { fileURLToPath } from "node:url";
 
 export default defineConfig({
-	test: {},
 	build: {
 		lib: {
-			entry: resolve(__dirname, "src/mod.ts"),
+			entry: fileURLToPath(new URL("./src/mod.ts", import.meta.url)),
 			name: "gamesbuf",
 			fileName: "gamesbuf",
 		},

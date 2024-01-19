@@ -1,14 +1,14 @@
 import {
 	ART_LEN_OFFSET,
 	ENTRY_MAX_SIZE,
+	type GamesbufEntry,
+	type GamesbufReaderQuery,
 	HASH_LEN,
 	HASH_OFFSET,
 	NAME_LEN_OFFSET,
 	NAME_OFFSET,
 	REGION_OFFSET,
 	SYSTEM_OFFSET,
-	type GamesbufEntry,
-	type GamesbufReaderQuery,
 	type Uint8,
 } from "./format.ts";
 
@@ -20,7 +20,7 @@ export function gamesbufEntryFromBuffer<System extends Uint8, Region extends Uin
 	const entry: Partial<GamesbufEntry<System, Region>> = {};
 
 	entry.system = buffer[SYSTEM_OFFSET] as System;
-	entry.md5 = buffer.subarray(HASH_OFFSET, HASH_OFFSET + HASH_LEN);
+	entry.md5 = buffer.slice(HASH_OFFSET, HASH_OFFSET + HASH_LEN);
 	entry.region = buffer[REGION_OFFSET] as Region;
 
 	let pointer = NAME_OFFSET;
@@ -30,7 +30,7 @@ export function gamesbufEntryFromBuffer<System extends Uint8, Region extends Uin
 	pointer += nameLength;
 
 	const artLength = buffer[ART_LEN_OFFSET];
-	entry.art = artLength ? decoder.decode(buffer.subarray(pointer, pointer + artLength)) : undefined;
+	entry.art = artLength ? decoder.decode(buffer.subarray(pointer, pointer + artLength)) : null;
 
 	return entry as GamesbufEntry<System, Region>;
 }
@@ -68,7 +68,7 @@ export function gamesbufEntryFromBuffer<System extends Uint8, Region extends Uin
  */
 export async function gamesbufReadStream<System extends Uint8, Region extends Uint8>(
 	stream: ReadableStream<Uint8Array>,
-	queries: GamesbufReaderQuery<System, Region>[],
+	queries: Readonly<GamesbufReaderQuery<System, Region>>[],
 	decoder: TextDecoder = new TextDecoder(),
 ): Promise<GamesbufEntry<System, Region>[]> {
 	// If there's nothing to query, just return back the queries array to save an allocation.
@@ -85,7 +85,6 @@ export async function gamesbufReadStream<System extends Uint8, Region extends Ui
 
 	const reader = stream.getReader();
 	const matches: GamesbufEntry<System, Region>[] = [];
-	const queriesToRemove: GamesbufReaderQuery<System, Region>[] = [];
 
 	let hasReadHeader = false;
 	let entryOffset = 0;
@@ -146,7 +145,7 @@ export async function gamesbufReadStream<System extends Uint8, Region extends Ui
 				shouldSkipEntry = true;
 				for (let i = 0, length = queries.length; i < length; ++i) {
 					const system = queries[i].system;
-					if (!system || system === byte) {
+					if (system === null || system === byte) {
 						shouldSkipEntry = false;
 						break;
 					}
@@ -165,15 +164,18 @@ export async function gamesbufReadStream<System extends Uint8, Region extends Ui
 
 			// check if we've reached the end of the entry
 			if (entryOffset && entryOffset === usedEntryLength) {
-				const entry = gamesbufEntryFromBuffer<System, Region>(entryBuffer.subarray(0, usedEntryLength), decoder);
+				const entry = gamesbufEntryFromBuffer<System, Region>(
+					entryBuffer.subarray(0, usedEntryLength),
+					decoder,
+				);
 				matches.push(entry);
 
 				// determine which queries were satisfied by this entry and remove them
-				for (let i = 0, length = queries.length; i < length; ++i) {
+				for (let i = 0; i < queries.length; ++i) {
 					const query = queries[i];
 
 					let isHashEqual = true;
-					for (let i = 0, length = query.md5.length; i < length; ++i) {
+					for (let i = 0; i < HASH_LEN; ++i) {
 						if (query.md5[i] !== entry.md5[i]) {
 							isHashEqual = false;
 							break;
@@ -182,21 +184,13 @@ export async function gamesbufReadStream<System extends Uint8, Region extends Ui
 
 					if (
 						isHashEqual ||
-						(query.system && query.system !== entry.system) ||
-						(query.region && query.region !== entry.region)
+						(query.system !== null && query.system !== entry.system) ||
+						(query.region !== null && query.region !== entry.region)
 					) {
 						continue;
 					}
 
-					queriesToRemove.push(query);
-				}
-
-				for (let i = 0, length = queriesToRemove.length; i < length; ++i) {
-					const queryIndex = queries.indexOf(queriesToRemove[i]);
-					if (queryIndex === -1) {
-						continue;
-					}
-					queries.splice(queryIndex, 1);
+					queries.splice(i--, 1);
 				}
 
 				// if all the queries are fulfilled, we're done

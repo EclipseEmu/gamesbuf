@@ -1,4 +1,5 @@
-import { assert, test } from "vitest";
+/// <reference types="bun-types" />
+import { expect, test } from "bun:test";
 import { GamesbufWriter } from "../src/mod.ts";
 import { EXAMPLE_BYTES } from "./common.ts";
 
@@ -44,11 +45,12 @@ test("generates a proper response", async () => {
 		await writer.writeEntry({
 			name: "test",
 			system: 1,
+			art: null,
 			region: 2,
 			md5: new Uint8Array(16).fill(hashBytes[i]),
 		});
 	}
 	await writer.finish();
 	const data = outputStream.getBytes();
-	assert.deepEqual(EXAMPLE_BYTES, data, "data mismatch");
+	expect(EXAMPLE_BYTES).toEqual(data);
 });

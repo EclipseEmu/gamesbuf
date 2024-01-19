@@ -5,7 +5,7 @@ export type Uint8 = number;
 export type GamesbufEntry<System extends Uint8 = Uint8, Region extends Uint8 = Uint8> = {
 	name: string;
 	md5: Uint8Array;
-	art?: string;
+	art: string | null;
 	region: Region;
 	system: System;
 };
@@ -15,9 +15,9 @@ export type GamesbufReaderQuery<System extends Uint8 = Uint8, Region extends Uin
 	/** The MD5 hash of the game to look for. Matches exactly. */
 	readonly md5: Uint8Array;
 	/** The region of the game to look for. When present, the reader will prefer this value. */
-	readonly region?: Region;
+	readonly region: Region | null;
 	/** The system of the game to look for. Matches exactly. */
-	readonly system?: System;
+	readonly system: System | null;
 };
 
 export const HEADER_SIZE = 0x01;

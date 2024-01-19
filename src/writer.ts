@@ -2,6 +2,7 @@ import {
 	ART_LEN_OFFSET,
 	ENTRY_MAX_SIZE,
 	GAMESBUF_VERSION,
+	type GamesbufEntry,
 	HASH_LEN,
 	HASH_OFFSET,
 	HEADER_SIZE,
@@ -9,7 +10,6 @@ import {
 	NAME_OFFSET,
 	REGION_OFFSET,
 	SYSTEM_OFFSET,
-	type GamesbufEntry,
 } from "./format.ts";
 
 /** A class for writing a gamesbuf file to a web stream.

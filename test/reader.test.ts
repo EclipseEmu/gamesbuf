@@ -1,4 +1,5 @@
-import { expect, test } from "vitest";
+/// <reference types="bun-types" />
+import { expect, test } from "bun:test";
 import { gamesbufReadStream } from "../src/mod.ts";
 import { EXAMPLE_BYTES } from "./common.ts";
 
@@ -18,15 +19,15 @@ function basicStream(data: Uint8Array): ReadableStream<Uint8Array> {
 test("reading", async () => {
 	const md5 = new Uint8Array(16).fill(0xaa);
 	const stream = basicStream(EXAMPLE_BYTES);
-	const entries = await gamesbufReadStream(stream, [{ md5 }]);
+	const entries = await gamesbufReadStream(stream, [{ md5, system: null, region: null }]);
 	expect(entries.length).toEqual(3);
 
 	for (let i = 0, length = entries.length; i < length; ++i) {
 		const entry = entries[i];
 		expect(entry.name).toEqual("test");
 		expect(entry.system).toEqual(1);
+		expect(entry.art).toBeNull();
 		expect(entry.region).toEqual(2);
 		expect(entry.md5).toEqual(md5);
-		expect(entry.art).toBeUndefined();
 	}
 });

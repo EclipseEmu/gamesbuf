@@ -1,27 +1,29 @@
 {
-	"name": "gamesbuf",
-	"version": "0.2.0",
-	"description": "A highly concise data format for basic information about games.",
-	"author": "Magnetar",
-	"license": "MIT",
-	"keywords": [],
-	"repository": {
-		"url": "https://github.com/eclipseemu/gamesbuf.git"
-	},
-	"types": "./dist/gamesbuf.d.ts",
-	"main": "./dist/gamesbuf.umd.js",
-	"module": "./dist/gamesbuf.mjs",
-	"files": ["/dist"],
-	"scripts": {
-		"build": "vite build",
-		"check": "rome check src; tsc",
-		"test": "vitest --run"
-	},
-	"devDependencies": {
-		"rome": "^12.1.3",
-		"typescript": "^5.1.6",
-		"vite": "^4.4.6",
-		"vite-plugin-dts": "^3.3.1",
-		"vitest": "^0.33.0"
-	}
+  "name": "gamesbuf",
+  "version": "0.2.1",
+  "description": "A highly concise data format for basic information about games.",
+  "author": "Magnetar",
+  "license": "MIT",
+  "keywords": [],
+  "repository": {
+    "url": "https://github.com/eclipseemu/gamesbuf.git"
+  },
+  "types": "./dist/gamesbuf.d.ts",
+  "main": "./dist/gamesbuf.umd.js",
+  "module": "./dist/gamesbuf.mjs",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "check": "biome check src; tsc",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12",
+    "vite-plugin-dts": "^3.7.1",
+    "@biomejs/biome": "^1.5.2",
+    "bun-types": "^1.0.23"
+  }
 }
